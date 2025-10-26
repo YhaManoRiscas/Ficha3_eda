@@ -8,15 +8,54 @@ using namespace std;
 int main() {
     Matrix M;
     int n, m;
-    /*
-    int c;
-    cout << "Deseja intruduzir uma matriz ja existente? [1 (sim) | 0 (nao)]";
-    cin >> c;
-    
-    if (c == 1) {
-        M.Ler("yh.txt");
+    char choice;
+    std::cout << "Deseja introduzir uma matriz a partir de um ficheiro? (s/n): ";
+    std::cin >> choice;
+
+    if (choice == 's' || choice == 'S') {
+        std::string fileName;
+        std::cout << "Introduza o nome do ficheiro: ";
+        std::cin >> fileName;
+
+        Matrix M(fileName.c_str()); // Cria a matriz a partir do ficheiro
+        if (M.rows() > 0 && M.cols() > 0) {
+            std::cout << "Matriz lida com sucesso:\n";
+            M.print(); // Exibe a matriz
+            cout << "Introduza as dimensoes da matriz (n m): ";
+            cin >> n >> m;
+            Matrix A(n, m);
+            cout << "Introduza os valores da matriz A (parte real e imaginaria):\n";
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < m; ++j) {
+                    double real, imag;
+                    cin >> real >> imag;
+                    A[i][j] = Complex(real, imag);
+                }
+            }
+            cout << "\nMatriz A:\n";
+            A.print();
+            Matrix C = M + A;
+            cout << "\nA + B:\n";
+            C.print();
+
+            Matrix D = M * A;
+            cout << "\nA * B:\n";
+            D.print();
+
+            Matrix T = M.transpose();
+            cout << "\nTransposta de M:\n";
+            T.print();
+
+            return 0;
+        }
+        else {
+            std::cout << "Falha ao carregar a matriz a partir do ficheiro.\n";
+        }
     }
-    else*/
+    else {
+        std::cout << "Operação cancelada. Matriz não criada.\n";
+    }
+
     cout << "Introduza as dimensoes da matriz (n m): ";
     cin >> n >> m;
     

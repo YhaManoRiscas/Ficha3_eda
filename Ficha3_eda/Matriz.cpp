@@ -29,7 +29,7 @@ void Matrix::delete_elems() {
 // Default constructor
 Matrix::Matrix() : nrows(0), ncols(0), elems(nullptr) {}
 
-// Constructor with rows and cols, initializes to zero
+// Constructor com linhas e colunas, inicializa a zero
 Matrix::Matrix(int rows, int cols) {
     create_elems(rows, cols);
     for (int i = 0; i < nrows; i++) {
@@ -38,25 +38,46 @@ Matrix::Matrix(int rows, int cols) {
         }
     }
 }
-/*
-// Constructor from file
+
+// Constructor por ficheiro
 Matrix::Matrix(const char file_name[]) : nrows(0), ncols(0), elems(nullptr) {
-    ifstream file(file_name);
-    if (!file.is_open()) {
-        cerr << "Error opening file: " << file_name << endl;
-        return;
+    std::ifstream in(file_name);
+    if (!in.is_open()) {
+        std::cerr << "Erro ao abrir o ficheiro: " << file_name << std::endl;
+        return; // Retorna uma matriz vazia em caso de erro
     }
-    
-    int r, c;
-    file >> r >> c;
-    create_elems(r, c);
-    for (int i = 0; i < nrows; i++) {
-        for (int j = 0; j < ncols; j++) {
-            file >> elems[i][j];  // Assuming Complex has operator>>
+
+    // Lê as dimensões da primeira linha
+    in >> nrows >> ncols;
+    if (in.fail() || nrows <= 0 || ncols <= 0) {
+        std::cerr << "Dimensões inválidas no ficheiro." << std::endl;
+        in.close();
+        return; // Retorna uma matriz vazia em caso de erro
+    }
+
+    // Aloca a matriz
+    create_elems(nrows, ncols);
+
+    // Lê os elementos complexos do ficheiro
+    for (int i = 0; i < nrows; ++i) {
+        for (int j = 0; j < ncols; ++j) {
+            double real, imag;
+            in >> real >> imag; // Lê a parte real e imaginária de cada elemento
+            if (in.fail()) {
+                std::cerr << "Erro ao ler elemento [" << i << "][" << j << "]." << std::endl;
+                delete_elems(); // Libera memória alocada
+                nrows = 0;
+                ncols = 0;
+                elems = nullptr;
+                in.close();
+                return; // Aborta em caso de erro
+            }
+            elems[i][j] = Complex(real, imag); // Assume que Complex tem um construtor que aceita (real, imag)
         }
     }
-    file.close();
-}*/
+
+    in.close();
+}
 
 // Copy constructor
 Matrix::Matrix(const Matrix& m2) : nrows(0), ncols(0), elems(nullptr) {
@@ -81,12 +102,12 @@ Matrix::~Matrix() {
     delete_elems();
 }
 
-// Access operator
+// Acesso operator
 Complex* Matrix::operator[](int row) {
     return elems[row];  // No bounds checking as per typical assignment
 }
 
-// Addition operator
+// Somador operator
 Matrix Matrix::operator+(const Matrix& m2) {
     if (nrows != m2.nrows || ncols != m2.ncols) {
         cerr << "Matrices dimensions incompatible for addition" << endl;
@@ -101,7 +122,7 @@ Matrix Matrix::operator+(const Matrix& m2) {
     return result;
 }
 
-// Multiplication operator
+// Multiplicador operator
 Matrix Matrix::operator*(const Matrix& m2) {
     if (ncols != m2.nrows) {
         cerr << "Matrices dimensions incompatible for multiplication" << endl;
@@ -124,7 +145,7 @@ Matrix Matrix::operator*(const Matrix& m2) {
 }
 
 
-// Transpose
+// Transposta
 Matrix Matrix::transpose() {
     Matrix result(ncols, nrows);
     for (int i = 0; i < nrows; i++) {
@@ -146,36 +167,4 @@ void Matrix::print() {
         cout << "\n\n";
     }
 }
-// in progress
-/*
-Matrix::Matrix(const char* file_name)
-{
-    FILE* pfile;
-    pfile = fopen(file_name, "r"); // Abre o ficheiro em modo leitura
-    if (pfile == NULL) {
-        printf("Erro a abrir o ficheiro em modo leitura: %s\n", file_name);
-        return;
-    } // Erro a abrir o ficheiro
 
-    else // Ficheiro aberto com sucesso
-    {
-        int rs = 0;
-        rs = fscanf(pfile, "%d,%d", &nrows, &ncols);
-        Matrix ::~Matrix();
-        Matrix ler(nrows, ncols);
-        create_elems(nrows, ncols);
-        for (int i = 0; i < nrows; i++) {
-
-            for (int j = 0; j < ncols; j++) {
-                double real, imag;
-                rs=fscanf(pfile, "%f,%f", &real, &imag);
-                ler[i][j] = Complex(real, imag);
-                    fclose(pfile);
-                return;
-            }
-        }
-    }
-}
-*/
-
-// qwertgyhu
